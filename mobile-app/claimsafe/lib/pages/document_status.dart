@@ -36,7 +36,7 @@ Future<String?> uploadImageToFirebase(XFile image) async {
 int userNo = 0;
 
 Future<void> storeImageMetadata(String imageUrl, String imageName,
-    String statusMessage, double confidenceScore) async {
+    String statusMessage, double confidenceScore, String outputImage) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     final userId = getUserId(user);
@@ -50,6 +50,7 @@ Future<void> storeImageMetadata(String imageUrl, String imageName,
       'statusMessage': statusMessage,
       'confidenceScore': confidenceScore * 100,
       'dateTime': dateTime.toIso8601String(),
+      'outputImage': outputImage, // Store the output image as a base64 string
     });
 
     userNo++;
@@ -67,7 +68,7 @@ class DocumentStatusPage extends StatefulWidget {
 class _DocumentStatusPageState extends State<DocumentStatusPage> {
   String? statusMessage;
   double? confidenceScore;
-  Uint8List? outputImageBytes; // To store the decoded output image
+  Uint8List? outputImageBytes;
   bool isLoading = false;
 
   Future<File> compressImage(File file) async {
@@ -89,8 +90,7 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
     try {
       File compressedImage = await compressImage(File(widget.image!.path));
 
-      final uri = Uri.parse(
-          'https://web-production-03e2.up.railway.app/detect-forgery');
+      final uri = Uri.parse('http://10.19.10.78:5000/detect-forgery');
       final request = http.MultipartRequest('POST', uri)
         ..files.add(
             await http.MultipartFile.fromPath('image', compressedImage.path));
@@ -104,13 +104,21 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
         setState(() {
           statusMessage = data['forgery_detected'] ? 'Forged' : 'Authentic';
           confidenceScore = data['confidence'];
-          outputImageBytes = base64Decode(data['output_image']);
+
+          if (data.containsKey('output_image') &&
+              data['output_image'] != null) {
+            // Decode the output image and set it as the main image to display
+            outputImageBytes = base64Decode(data['output_image']);
+          } else {
+            statusMessage = 'Output image is not available';
+          }
         });
 
         final imageUrl = await uploadImageToFirebase(widget.image!);
         if (imageUrl != null) {
-          await storeImageMetadata(
-              imageUrl, widget.image!.name, statusMessage!, confidenceScore!);
+          final outputImage = data['output_image'] ?? '';
+          await storeImageMetadata(imageUrl, widget.image!.name, statusMessage!,
+              confidenceScore!, outputImage);
         } else {
           throw Exception('Image upload failed');
         }
@@ -177,19 +185,26 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.05), // Responsive padding
+        padding: EdgeInsets.all(screenWidth * 0.05),
         child: Column(
           children: [
-            if (widget.image != null)
+            if (outputImageBytes != null)
+              Image.memory(
+                outputImageBytes!,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: screenHeight * 0.35,
+              )
+            else if (widget.image != null)
               Image.file(
                 File(widget.image!.path),
                 fit: BoxFit.contain,
                 width: double.infinity,
-                height: screenHeight * 0.35, // Responsive height
+                height: screenHeight * 0.35,
               ),
             const SizedBox(height: 30.0),
 
-            // Show a box with the status, confidence score, and output image after API response
+            // Display status and confidence score with the output image
             if (isLoading)
               const CircularProgressIndicator()
             else if (statusMessage != null)
@@ -212,14 +227,6 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                       style: GoogleFonts.inter(
                           textStyle: const TextStyle(
                               fontSize: 16.0, color: Colors.white)),
-                    ),
-                  const SizedBox(height: 10),
-                  if (outputImageBytes != null)
-                    Image.memory(
-                      outputImageBytes!,
-                      fit: BoxFit.contain,
-                      height: screenHeight * 0.35,
-                      width: double.infinity,
                     ),
                 ],
               )
