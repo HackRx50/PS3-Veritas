@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'trainer_mode_page.dart'; // Import the TrainerModePage
 
 String getUserId(User user) {
   return user.email!.split('@')[0];
@@ -186,6 +187,7 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
               onPressed: () {
                 if (passwordController.text == "123") {
                   Navigator.of(context).pop();
+                  navigateToTrainerMode();
                 } else {
                   passwordController.clear();
                   Get.snackbar(
@@ -202,6 +204,23 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
         );
       },
     );
+  }
+
+  void navigateToTrainerMode() {
+    Get.to(() => TrainerModePage(
+          outputImageBytes: outputImageBytes,
+          previewImageFile: File(widget.image!.path),
+          onSubmit: () {
+            // Handle submit action if needed
+          },
+          onToggle: () {
+            // Navigate back to Document Status Page
+            Get.back();
+            setState(() {
+              isTrainerMode = false; // Update trainer mode state
+            });
+          },
+        ));
   }
 
   void toggleTrainerMode(bool value) {
@@ -294,63 +313,9 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                           statusMessage == 'Forged' ? Colors.red : Colors.green,
                     )),
                   ),
-                  const SizedBox(height: 10),
                   if (confidenceScore != null)
                     Text(
                       'Confidence: ${(confidenceScore! * 100).toStringAsFixed(2)}%',
-                      style: GoogleFonts.inter(
-                          textStyle: const TextStyle(
-                              fontSize: 16.0, color: Colors.white)),
-                    ),
-                ],
-              )
-            else
-              const Text(
-                'No result yet',
-                style: TextStyle(fontSize: 16.0, color: Colors.white),
-              ),
-            const SizedBox(height: 30.0),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: detectForgery,
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.blue),
-                    foregroundColor: WidgetStateProperty.all(Colors.white),
-                  ),
-                  child: Text('Submit for Forgery Detection',
-                      style: GoogleFonts.urbanist(
-                          textStyle:
-                              const TextStyle(fontWeight: FontWeight.bold))),
-                ),
-                const SizedBox(height: 70.0),
-                ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.blue),
-                      foregroundColor: WidgetStateProperty.all(Colors.white),
-                    ),
-                    child: Text('Upload Another Image',
-                        style: GoogleFonts.urbanist(
-                            textStyle:
-                                const TextStyle(fontWeight: FontWeight.bold)))),
-                const SizedBox(height: 30.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Switch(
-                      value: isTrainerMode,
-                      onChanged: toggleTrainerMode,
-                      activeColor: Colors.green,
-                      activeTrackColor: Colors.greenAccent,
-                      inactiveThumbColor: Colors.red[100],
-                      inactiveTrackColor: Colors.red,
-                    ),
-                    Text(
-                      'Trainer Mode',
                       style: GoogleFonts.inter(
                         textStyle: const TextStyle(
                           fontSize: 16.0,
@@ -358,9 +323,49 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                         ),
                       ),
                     ),
-                  ],
+                ],
+              ),
+            const SizedBox(height: 30.0),
+            ElevatedButton(
+              onPressed: detectForgery,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
+              child: Text('Submit for Forgery Detection',
+                  style: GoogleFonts.urbanist(
+                      textStyle: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white))),
+            ),
+            const SizedBox(height: 30.0),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
+              child: Text('Upload Another Image',
+                  style: GoogleFonts.urbanist(
+                      textStyle: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white))),
+            ),
+            const SizedBox(height: 30.0),
+            Switch(
+              value: isTrainerMode,
+              onChanged: toggleTrainerMode,
+              activeColor: Colors.green,
+              activeTrackColor: Colors.greenAccent,
+              inactiveThumbColor: Colors.red[100],
+              inactiveTrackColor: Colors.red,
+            ),
+            Text(
+              'Trainer Mode',
+              style: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
                 ),
-              ],
+              ),
             ),
           ],
         ),
