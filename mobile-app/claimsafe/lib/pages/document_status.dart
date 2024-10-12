@@ -50,7 +50,7 @@ Future<void> storeImageMetadata(String imageUrl, String imageName,
       'statusMessage': statusMessage,
       'confidenceScore': confidenceScore * 100,
       'dateTime': dateTime.toIso8601String(),
-      'outputImage': outputImage, // Store the output image as a base64 string
+      'outputImage': outputImage,
     });
 
     userNo++;
@@ -70,6 +70,8 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
   double? confidenceScore;
   Uint8List? outputImageBytes;
   bool isLoading = false;
+  bool isTrainerMode = false;
+  final TextEditingController passwordController = TextEditingController();
 
   Future<File> compressImage(File file) async {
     final result = await FlutterImageCompress.compressAndGetFile(
@@ -107,7 +109,6 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
 
           if (data.containsKey('output_image') &&
               data['output_image'] != null) {
-            // Decode the output image and set it as the main image to display
             outputImageBytes = base64Decode(data['output_image']);
           } else {
             statusMessage = 'Output image is not available';
@@ -135,6 +136,81 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> showTrainerModeDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 10, 16, 31),
+          title: Text(
+            'Enter Trainer Mode',
+            style: GoogleFonts.inter(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Please enter your password to enable Trainer Mode.',
+                style: GoogleFonts.inter(
+                  textStyle: const TextStyle(color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueAccent),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (passwordController.text == "123") {
+                  Navigator.of(context).pop();
+                } else {
+                  passwordController.clear();
+                  Get.snackbar(
+                    'Error',
+                    'Incorrect Password',
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                }
+              },
+              child: const Text('Submit', style: TextStyle(color: Colors.blue)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void toggleTrainerMode(bool value) {
+    setState(() {
+      isTrainerMode = value;
+      if (isTrainerMode) {
+        showTrainerModeDialog();
+      }
+    });
   }
 
   final user = FirebaseAuth.instance.currentUser;
@@ -203,8 +279,6 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                 height: screenHeight * 0.35,
               ),
             const SizedBox(height: 30.0),
-
-            // Display status and confidence score with the output image
             if (isLoading)
               const CircularProgressIndicator()
             else if (statusMessage != null)
@@ -235,18 +309,15 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                 'No result yet',
                 style: TextStyle(fontSize: 16.0, color: Colors.white),
               ),
-
             const SizedBox(height: 30.0),
-
-            // Button to submit and detect forgery
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: detectForgery,
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor: WidgetStateProperty.all(Colors.blue),
+                    foregroundColor: WidgetStateProperty.all(Colors.white),
                   ),
                   child: Text('Submit for Forgery Detection',
                       style: GoogleFonts.urbanist(
@@ -259,13 +330,36 @@ class _DocumentStatusPageState extends State<DocumentStatusPage> {
                       Get.back();
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.blue),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(Colors.blue),
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
                     ),
                     child: Text('Upload Another Image',
                         style: GoogleFonts.urbanist(
                             textStyle:
                                 const TextStyle(fontWeight: FontWeight.bold)))),
+                const SizedBox(height: 30.0),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Switch(
+                      value: isTrainerMode,
+                      onChanged: toggleTrainerMode,
+                      activeColor: Colors.green,
+                      activeTrackColor: Colors.greenAccent,
+                      inactiveThumbColor: Colors.red[100],
+                      inactiveTrackColor: Colors.red,
+                    ),
+                    Text(
+                      'Trainer Mode',
+                      style: GoogleFonts.inter(
+                        textStyle: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],

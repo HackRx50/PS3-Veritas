@@ -114,10 +114,12 @@ class _HistoryPageState extends State<HistoryPage> {
 
         String path;
         if (Platform.isAndroid) {
-          path = '/storage/emulated/0/Download/History_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+          path =
+              '/storage/emulated/0/Download/History_${DateTime.now().millisecondsSinceEpoch}.xlsx';
         } else {
           final directory = await getDownloadsDirectory();
-          path = '${directory!.path}/History_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+          path =
+              '${directory!.path}/History_${DateTime.now().millisecondsSinceEpoch}.xlsx';
         }
 
         final excelFile = File(path);
@@ -172,12 +174,51 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
+  void _showEnlargedImage(String imageUrl) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => Get.back(),
+              child: Container(
+                color: Colors.black.withOpacity(0.7),
+                child: InteractiveViewer(
+                  maxScale: 5.0, // Set maximum zoom scale
+                  minScale: 1.0, // Set minimum zoom scale
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 20,
+              right: 20,
+              child: IconButton(
+                icon: Icon(Icons.cancel, color: Colors.black, size: 30),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Use MediaQuery for responsive design
     final screenSize = MediaQuery.of(context).size;
     final isLargeScreen = screenSize.width > 600; // Adjust threshold as needed
-    final cardMargin = isLargeScreen ? EdgeInsets.symmetric(vertical: 16, horizontal: 32) : EdgeInsets.symmetric(vertical: 8, horizontal: 16);
+    final cardMargin = isLargeScreen
+        ? EdgeInsets.symmetric(vertical: 16, horizontal: 32)
+        : EdgeInsets.symmetric(vertical: 8, horizontal: 16);
     final titleFontSize = isLargeScreen ? 24.0 : 20.0;
     final subtitleFontSize = isLargeScreen ? 16.0 : 14.0;
 
@@ -215,95 +256,80 @@ class _HistoryPageState extends State<HistoryPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : imageHistory.isEmpty
-          ? const Center(
-        child: Text(
-          'No history found',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      )
-          : ListView.builder(
-        itemCount: imageHistory.length,
-        itemBuilder: (context, index) {
-          final item = imageHistory[index];
-          return Card(
-            margin: cardMargin,
-            color: const Color.fromARGB(255, 20, 30, 50),
-            child: ListTile(
-              leading: item['imageUrl'] != null
-                  ? Image.network(
-                item['imageUrl'],
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              )
-                  : const Icon(
-                Icons.image_not_supported,
-                color: Colors.grey,
-                size: 50,
-              ),
-              title: Text(
-                'Status: ${item['statusMessage'] ?? 'Unknown'}',
-                style: GoogleFonts.urbanist(
-                    textStyle: TextStyle(
-                      color: item['statusMessage'] == 'Forged'
-                          ? Colors.red
-                          : Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: titleFontSize,
-                    )),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Confidence: ${(item['confidenceScore'] as num?)?.toStringAsFixed(2) ?? 'N/A'}%',
-                    style: GoogleFonts.urbanist(
-                        textStyle: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: subtitleFontSize,
-                        )),
+              ? const Center(
+                  child: Text(
+                    'No history found',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
-                  Text(
-                    'Image Name: ${item['imageName'] ?? 'No name'}',
-                    style: GoogleFonts.urbanist(
-                        textStyle: TextStyle(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.bold,
-                          fontSize: subtitleFontSize,
-                        )),
-                  ),
-                  Text(
-                    'Date: ${_formatDate(item['dateTime'])}',
-                    style: GoogleFonts.urbanist(
-                        textStyle: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold,
-                            fontSize: subtitleFontSize)),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                )
+              : ListView.builder(
+                  itemCount: imageHistory.length,
+                  itemBuilder: (context, index) {
+                    final item = imageHistory[index];
+                    return Card(
+                      margin: cardMargin,
+                      color: const Color.fromARGB(255, 20, 30, 50),
+                      child: ListTile(
+                        leading: GestureDetector(
+                          onTap: () => _showEnlargedImage(item['imageUrl']),
+                          child: Image.network(
+                            item['imageUrl'] ?? '',
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(
+                          'Status: ${item['statusMessage'] ?? 'Unknown'}',
+                          style: GoogleFonts.urbanist(
+                            textStyle: TextStyle(
+                              color: item['statusMessage'] == 'Forged'
+                                  ? Colors.red
+                                  : Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: titleFontSize,
+                            ),
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Confidence: ${(item['confidenceScore'] as num?)?.toStringAsFixed(2) ?? 'N/A'}%',
+                              style: GoogleFonts.urbanist(
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: subtitleFontSize,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'Image Name: ${item['imageName'] ?? 'No name'}',
+                              style: GoogleFonts.urbanist(
+                                textStyle: TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: subtitleFontSize,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(_parseDate(item['dateTime']))}',
+                              style: GoogleFonts.urbanist(
+                                textStyle: TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: subtitleFontSize,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
     );
-  }
-
-  String _formatDate(dynamic dateTime) {
-    if (dateTime == null) return 'No date';
-    try {
-      DateTime parsedDate;
-      if (dateTime is int) {
-        parsedDate = DateTime.fromMillisecondsSinceEpoch(dateTime);
-      } else if (dateTime is String) {
-        parsedDate = DateTime.parse(dateTime);
-      } else {
-        return 'Invalid date';
-      }
-      return DateFormat('MMM d, y - h:mm a').format(parsedDate);
-    } catch (e) {
-      return 'Invalid date';
-    }
   }
 }
