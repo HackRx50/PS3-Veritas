@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"claim-safe2","appId":"1:99961129299:android:581d0919e9c7519bc8b9a6","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"claim-safe2","configurations":{"android":"1:99961129299:android:581d0919e9c7519bc8b9a6","ios":"1:99961129299:ios:748fd6e7ea5c7c15c8b9a6"}}}}}}
