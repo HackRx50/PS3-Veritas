@@ -1,0 +1,142 @@
+$background-color: #0A101F;
+$text-color: #ffffff;
+$highlight-color: #adc1ad;
+$progress-circle-color: linear-gradient(to right, #7600ff, #ff005f);
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: $background-color;
+  color: $text-color;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: $background-color;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+  header {
+    display: flex;
+    justify-content: space-between;
+    padding: 35px;
+
+    .logo {
+      font-family: "Share Tech Mono", monospace;
+      font-weight: 400;
+      font-style: normal;
+      font-size: 34px;
+      color: $text-color;
+      text-decoration: none !important; 
+    }
+    @media screen and (max-width: 587px) {
+      padding:5px;
+      padding-top: 15px;
+  
+      .logo {
+        font-size: 25px;
+        margin:5px 5px 0px 5px;
+      }
+      nav a{
+        font-size: 15px;
+       
+      }    
+    }
+    nav {
+      a {
+        padding: 10px;
+        margin-left: 10px;
+        color: $text-color;
+        text-decoration: none;
+       
+      }
+    }
+  }
+}
+
+
+.history {
+  padding-left: 35px;
+  min-height: calc(100vh - 150px);
+}
+@media screen and (max-width:588px) {
+  a{
+    padding-left:none;
+  }
+}
+
+.filter {
+  border-radius: 5px;
+  background-color: #55555A;
+  padding: 5px;
+  color: $text-color;
+}
+
+.history-details {
+  display: flex;
+}
+@media screen and (max-width:587px) {
+  .history-details{
+    border-radius: 35px;
+    width:250px;
+    flex-direction: column;
+    border:0.75px solid aqua;
+    padding-left:8px;
+  }
+}
+.history-image {
+  width: 190px;
+  height: 190px;
+  margin:14px 70px 40px 0px;
+}
+
+.history-sub-details {
+  
+  display: flex;
+  flex-direction: column;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center; 
+  background-color:green; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  
+  
+  svg {
+    margin-left: 8px;
+    font-size: 20px; 
+  }
+
+  &:hover {
+    background-color: #45a049; 
+  }
+}
+@media screen and (max-width:587px) {
+  .download-btn{
+    padding:5px ;
+    width:30px;
+  .hidden-text{
+    display: none;
+  }
+   svg{
+    margin-left: 2px;
+   }
+  }
+
+}
+ul {
+  list-style: none; 
+}
+
+li {
+  margin-bottom: 20px; 
+}

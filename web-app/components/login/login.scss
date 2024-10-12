@@ -1,0 +1,135 @@
+/* login.scss */
+.login-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('/components/images/bg.png'); 
+     background-color: #0A101F;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .login-container {
+    padding: 20px 40px;
+    width: 360px;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border: 0.75px solid aqua;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+  }
+  @media screen and (max-width:440px){
+    .login-container{
+      padding:5px 5px;
+    }
+  }
+  @media screen and (max-width:373px){
+    .login-container{
+      padding:1px 1px;
+    }
+  }
+  .title {
+    text-align: center;
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 10px;
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .subtitle {
+    text-align: center;
+    margin:45px 260px 30px 0px;
+    font-size: 1.3rem;
+    color: white;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  
+    label {
+      display: block;
+      color: white;
+      margin-bottom: 5px;
+    }
+  
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+      box-sizing: border-box;
+      outline: none;
+      font-size: 1rem;
+    }
+  }
+  
+  .forgot-password {
+    text-align: right;
+    margin:10px 220px 30px 0px;
+    a {
+      color: #fff;
+      font-size: 0.9rem;
+      text-decoration: none;
+      opacity: 0.8;
+  
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    color: #0A101F;
+    margin:7px 0px 20px 0px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+  .error-message{
+    width:100px;
+    color:white;
+    margin:0px 0px 35px 70px;
+  }
+  .separator {
+    text-align: center;
+    color: white;
+    margin: 15px 0px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .register-link {
+    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+    margin:5px 0px 20px;
+  
+    a {
+      color: #fff;
+      font-weight: bold;
+      text-decoration: none;
+  
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  
