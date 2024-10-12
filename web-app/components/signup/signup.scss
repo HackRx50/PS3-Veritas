@@ -1,0 +1,148 @@
+.signup-page {
+  display: flex;
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+  margin: 0;  /* Ensures no margin is applied to the entire layout */
+}
+
+.signup-left {
+  width: 50%;  /* Set a percentage width to make it responsive */
+  padding: 15px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  /* Background settings for the left section */
+  background-image: url('/components/images/2ndpg.png');
+  background-size: cover;
+  background-position: center;
+  background-color: #0A101F; /* Fallback color */
+  border-right: 1px solid #1E2A3A; /* Thin separator line */
+}
+.signup-left-content{
+  padding:50px;
+  margin-bottom: 190px;
+}
+h1 {
+
+  font-family: "Share Tech Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-top: 10px;
+  max-width: 600px;
+}
+
+.signup-right {
+  width: 50%;  /* Set a percentage width to balance both sections */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+
+  /* Background settings for the right section */
+  background-image: url('/components/images/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-color: #0A101F; /* Matches the background of the left section */
+}
+@media screen and (max-width:750px) {
+  .signup-left{
+    display:none
+  }
+  .signup-right{
+    margin-top:100px;
+    height: 500px;
+    width:500px;
+    border: 0.75px solid aqua;
+    border-radius: 30px;
+    padding:5px;
+  }
+
+}
+
+/* Form styling */
+.signup-form {
+  width: 80%;
+  max-width: 500px;
+  background-color: transparent;
+  padding: 30px;
+  color: white;
+
+  h3 {
+    font-size: 1.8rem;
+    margin-bottom: 45px;
+    text-align: center;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+    position: relative;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: white;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #1E2A3A;
+      color: white;
+      outline: none;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #00d4ff;
+      }
+    }
+  }
+
+  .signup-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    background-color: #fff;
+    margin-top:10px;
+    color: #0A101F;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+
+  .register-link {
+    text-align: center;
+    margin-top: 10px;
+
+    a {
+      color: #00d4ff;
+      font-weight: bold;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
