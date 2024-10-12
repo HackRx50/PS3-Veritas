@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { ref, set, push} from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -15,6 +15,7 @@ const Main = () => {
   const [loading, setLoading] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState(null);
   const [outputImage, setOutputImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -34,8 +35,7 @@ const Main = () => {
       reader.readAsDataURL(file);
       setStatusMessage('');
       setConfidenceScore(null);
-      // Don't clear the output image here
-      // setOutputImage(null);
+      setOutputImage(null);
     }
   };
 
@@ -138,20 +138,22 @@ const Main = () => {
       setLoading(false);
     }
   };
-
   const clearResults = () => {
     setImageFile(null);
     setImagePreview(null);
     setStatusMessage('');
     setConfidenceScore(null);
     setOutputImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   if (!currentUser) {
     return <Navigate to="/" />;
   }
 
-return (
+  return (
     <div className="main-container">
       <header>
         <div className="logo">ClaimSafe</div>
@@ -171,6 +173,7 @@ return (
             <div className="file-drop">
               <p className="file-text">Click to browse or drag and drop your image</p>
               <input
+                ref={fileInputRef}
                 className='cf-button'
                 type="file"
                 accept="image/*"
