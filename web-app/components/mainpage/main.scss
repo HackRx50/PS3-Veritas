@@ -2,15 +2,22 @@ $background-color: #0A101F;
 $text-color: #ffffff;
 $highlight-color: #adc1ad;
 $progress-circle-color: linear-gradient(to right, #7600ff, #ff005f);
+$light-red-background: #08330b; // Light red color for trainer mode
 
 .main-container {
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: $background-color;
   color: $text-color;
   font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease; // Smooth transition for background color change
+
+  &.trainer-mode {
+    background-color: $light-red-background;
+    color: #000000; // Change text color to black for better contrast
+  }
 }
 
 .header {
@@ -34,7 +41,8 @@ $progress-circle-color: linear-gradient(to right, #7600ff, #ff005f);
 }
 
 .vyd {
-  margin:1px 0px 0px 390px;
+  margin:1px 80px 0px 390px;
+  color:white;
 }
 
 .content {
@@ -173,12 +181,146 @@ $progress-circle-color: linear-gradient(to right, #7600ff, #ff005f);
   background-color: #007AFF;
   border-radius: 25px;
 } 
+.trainerdiv{
+  display:flex;
+  flex-direction: row;
+}
+.trainer-mode-toggle {
+  display: flex;
+  align-items: center;
+  margin-left: 155px;
 
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    height: 34px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* Red background for initial state (before clicking) */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: red;  /* Set default color to red */
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 6px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+  }
+
+
+  /* Change to green when the switch is checked */
+  input:checked + .slider {
+    background-color: green;  /* Set background to green on click */
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+   .off {
+    color: white;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 70%;
+    font-size: 10px;
+    font-family: Verdana, sans-serif;
+  }
+  .on {
+    color: white;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 25%;
+    font-size: 12px;
+    font-family: Verdana, sans-serif;
+  }
+
+  input:checked + .slider .on {
+    display: block;
+  }
+
+  input:checked + .slider .off {
+    display: none;
+  }
+
+  input:not(:checked) + .slider .on {
+    display: none;
+  }
+
+  input:not(:checked) + .slider .off {
+    display: block;
+  }
+
+  .toggle-label {
+    margin-left: 10px;
+    color:white;
+   
+  }
+}
+.icon-section{
+  margin-left: 24px;
+   margin-top: 100px;
+}
 .cf-button {
   margin-left: 100px;
   font-family: 'Poppins', sans-serif;
 }
+.select-button{
+  background-color:rgb(40, 210, 40); // Red background color
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.remove-button {
+  background-color: #ff4d4d; // Red background color
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
 
+  &:hover {
+    background-color: #ff1a1a; // Darker red on hover
+  }
+}
+.yolo-coordinates{
+  color:white;
+  margin-left: 50px;
+}
 .status-section {
   margin-top: 6px;
   margin-left: 50px;
