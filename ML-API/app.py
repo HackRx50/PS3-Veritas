@@ -9,14 +9,13 @@ import tensorflow as tf
 from werkzeug.utils import secure_filename
 from ultralytics import YOLO
 
-
 app = Flask(__name__)
 
 # Initialize CORS
 CORS(app)
 
 # Load the TensorFlow model at startup for forgery detection
-MODEL_PATH = 'forgeryvTestRand.keras'
+MODEL_PATH = 'ForgeryTestFinalCNN.keras'
 try:
     forgery_model = tf.keras.models.load_model(MODEL_PATH)
     print("Forgery detection model loaded successfully.")
@@ -25,7 +24,7 @@ except Exception as e:
     forgery_model = None
 
 # Load the YOLOv8 model for object detection
-yolo_model = YOLO('best2.pt')
+yolo_model = YOLO('lastCombinedAug.pt')
 
 def perform_ela(image_path, output_path, quality=90):
     try:
@@ -164,28 +163,33 @@ def process_image():
                 os.remove(saved_ela_image_path)
                 return jsonify({'error': 'Inference failed.'}), 500
 
-            # Determine if forgery is detected
+            # If forgery is detected, perform YOLO inference and format bounding box data
             if confidence_score < 0.5:
-                # Perform YOLO inference if forgery is detected
+                # YOLO inference on the saved ELA image
                 yolo_results = perform_yolo_inference(saved_ela_image_path)
                 if yolo_results is None:
                     return jsonify({'error': 'YOLO inference failed.'}), 500
 
-                # Overlay bounding boxes on the original image
-                output_image_with_boxes = overlay_bounding_boxes(file_path, yolo_results)
-                if output_image_with_boxes is None:
-                    return jsonify({'error': 'Error overlaying bounding boxes.'}), 500
+                # Extract bounding box locations and convert them to the desired format
+                locations = []
+                for result in yolo_results:
+                    boxes = result.boxes.xyxy  # xyxy format for bounding boxes
+                    for box in boxes:
+                        x1, y1, x2, y2 = map(int, box)
+                        width = x2 - x1
+                        height = y2 - y1
+                        locations.append([x1, y1, width, height])
 
-                # Return the result along with the bounding box image
+                # Response when forgery is detected, including locations of bounding boxes
                 response = {
-                    'forgery_detected': True,
-                    'confidence': round(1 - confidence_score, 4),
-                    'output_image': output_image_with_boxes
+                    'is_forged': True,
+                    'location': locations
                 }
             else:
+                # Response when no forgery is detected
                 response = {
-                    'forgery_detected': False,
-                    'confidence': round(confidence_score, 4)
+                    'is_forged': False,
+                    'location': []
                 }
 
             # Clean up temporary files
